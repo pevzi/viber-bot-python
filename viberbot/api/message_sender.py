@@ -26,6 +26,23 @@ class MessageSender(object):
 
 		return self._post_request(BOT_API_ENDPOINT.SEND_MESSAGE, payload)
 
+	def broadcast_message(self, to, sender_name, sender_avatar, message, chat_id=None):
+		if not message.validate():
+			self._logger.error(u"failed validating message: {0}".format(message))
+			raise Exception("failed validating message: {0}".format(message))
+
+		payload = self._prepare_payload(
+			message=message,
+			broadcast_list=to,
+			sender_name=sender_name,
+			sender_avatar=sender_avatar,
+			chat_id=chat_id
+		)
+
+		self._logger.debug(u"going to broadcast message: {0}".format(payload))
+
+		return self._post_request(BOT_API_ENDPOINT.BROADCAST_MESSAGE, payload)
+
 	def post_to_public_account(self, sender, sender_name, sender_avatar, message):
 		if not message.validate():
 			self._logger.error(u"failed validating message: {0}".format(message))
@@ -54,12 +71,13 @@ class MessageSender(object):
 
 		return result['message_token']
 
-	def _prepare_payload(self, message, sender_name, sender_avatar, sender=None, receiver=None, chat_id=None):
+	def _prepare_payload(self, message, sender_name, sender_avatar, sender=None, receiver=None, broadcast_list=None, chat_id=None):
 		payload = message.to_dict()
 		payload.update({
 			'auth_token': self._bot_configuration.auth_token,
 			'from': sender,
 			'receiver': receiver,
+			'broadcast_list': broadcast_list,
 			'sender': {
 				'name': sender_name,
 				'avatar': sender_avatar

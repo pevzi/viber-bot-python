@@ -75,6 +75,26 @@ class Api(object):
 
 		return sent_messages_tokens
 
+	def broadcast_messages(self, to, messages, chat_id=None):
+		"""
+		:param to: list of Viber user ids
+		:param messages: list of Message objects to be sent
+		:param chat_id: Optional. String. Indicates that this is a message sent in inline conversation.
+		:return: list of tokens of the sent messages
+		"""
+		self._logger.debug("going to broadcast messages: {0}, to: {1}".format(messages, to))
+		if not isinstance(messages, list):
+			messages = [messages]
+
+		sent_messages_tokens = []
+
+		for message in messages:
+			token = self._message_sender.broadcast_message(
+				to, self._bot_configuration.name, self._bot_configuration.avatar, message, chat_id)
+			sent_messages_tokens.append(token)
+
+		return sent_messages_tokens
+
 	def post_messages_to_public_account(self, sender, messages):
 		if not isinstance(messages, list):
 			messages = [messages]
