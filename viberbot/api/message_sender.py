@@ -41,7 +41,9 @@ class MessageSender(object):
 
 		self._logger.debug(u"going to broadcast message: {0}".format(payload))
 
-		return self._post_request(BOT_API_ENDPOINT.BROADCAST_MESSAGE, payload)
+		response = self._post_request_base(BOT_API_ENDPOINT.BROADCAST_MESSAGE, payload)
+
+		return response['message_token'], response['failed_list']
 
 	def post_to_public_account(self, sender, sender_name, sender_avatar, message):
 		if not message.validate():
@@ -62,12 +64,17 @@ class MessageSender(object):
 
 		return self._post_request(BOT_API_ENDPOINT.POST, payload)
 
-	def _post_request(self, endpoint, payload):
+	def _post_request_base(self, endpoint, payload):
 		result = self._request_sender.post_request(
 			endpoint, json.dumps(payload))
 
 		if not result['status'] == 0:
 			raise Exception(u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']))
+
+		return result
+
+	def _post_request(self, endpoint, payload):
+		result = self._post_request_base(endpoint, payload)
 
 		return result['message_token']
 

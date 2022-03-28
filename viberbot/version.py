@@ -1,1 +1,1 @@
-__version__ = '1.0.12+broadcast.messages'
+__version__ = '1.0.12+broadcast.messages.1'

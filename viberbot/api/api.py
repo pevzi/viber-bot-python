@@ -86,12 +86,12 @@ class Api(object):
 		if not isinstance(messages, list):
 			messages = [messages]
 
-		sent_messages_tokens = []
+		sent_messages_tokens = {}
 
 		for message in messages:
-			token = self._message_sender.broadcast_message(
+			token, failed_list = self._message_sender.broadcast_message(
 				to, self._bot_configuration.name, self._bot_configuration.avatar, message, chat_id)
-			sent_messages_tokens.append(token)
+			sent_messages_tokens[token] = failed_list
 
 		return sent_messages_tokens
 
