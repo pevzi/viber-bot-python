@@ -1,1 +1,1 @@
-__version__ = '1.0.12+broadcast.messages.1'
+__version__ = '1.0.12+pevzi'
