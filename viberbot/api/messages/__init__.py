@@ -1,3 +1,4 @@
+from viberbot.api.exceptions import ViberException
 from viberbot.api.messages.contact_message import ContactMessage
 from viberbot.api.messages.file_message import FileMessage
 from viberbot.api.messages.picture_message import PictureMessage
@@ -26,10 +27,10 @@ MESSAGE_TYPE_TO_CLASS = {
 
 def get_message(message_dict):
 	if 'type' not in message_dict:
-		raise Exception("message data doesn't contain a type")
+		raise ViberException("message data doesn't contain a type")
 
 	if message_dict['type'] not in MESSAGE_TYPE_TO_CLASS:
-		raise Exception(u"message type '{0}' is not supported".format(message_dict['type']))
+		raise ViberException(u"message type '{0}' is not supported".format(message_dict['type']))
 
 	return MESSAGE_TYPE_TO_CLASS[message_dict['type']]().from_dict(message_dict)
 

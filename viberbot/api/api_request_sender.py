@@ -2,6 +2,7 @@ import requests
 from requests import RequestException
 import traceback
 from viberbot.api.consts import BOT_API_ENDPOINT
+from viberbot.api.exceptions import ViberAPIException, ViberException
 import json
 
 
@@ -29,7 +30,11 @@ class ApiRequestSender(object):
 			payload=json.dumps(payload))
 
 		if not result['status'] == 0:
-			raise Exception(u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']))
+			raise ViberAPIException(
+				u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']),
+				status=result['status'],
+				status_message=result['status_message'],
+			)
 
 		return result['event_types']
 
@@ -63,7 +68,7 @@ class ApiRequestSender(object):
 
 	def get_online_status(self, ids=[]):
 		if ids is None or not isinstance(ids, list) or len(ids) == 0:
-			raise Exception(u"missing parameter ids, should be a list of viber memberIds")
+			raise ViberException(u"missing parameter ids, should be a list of viber memberIds")
 
 		payload = {
 			'auth_token': self._bot_configuration.auth_token,
@@ -74,13 +79,17 @@ class ApiRequestSender(object):
 			payload=json.dumps(payload))
 
 		if not result['status'] == 0:
-			raise Exception(u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']))
+			raise ViberAPIException(
+				u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']),
+				status=result['status'],
+				status_message=result['status_message'],
+			)
 
 		return result['users']
 
 	def get_user_details(self, user_id):
 		if user_id is None:
-			raise Exception(u"missing parameter id")
+			raise ViberException(u"missing parameter id")
 
 		payload = {
 			'auth_token': self._bot_configuration.auth_token,
@@ -91,7 +100,11 @@ class ApiRequestSender(object):
 			payload=json.dumps(payload))
 
 		if not result['status'] == 0:
-			raise Exception(u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']))
+			raise ViberAPIException(
+				u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']),
+				status=result['status'],
+				status_message=result['status_message'],
+			)
 
 		return result['user']
 

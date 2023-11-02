@@ -1,6 +1,11 @@
 import json
 
 from viberbot.api.consts import BOT_API_ENDPOINT
+from viberbot.api.exceptions import (
+	ViberAPIException,
+	ViberException,
+	ViberValidationException,
+)
 
 
 class MessageSender(object):
@@ -12,7 +17,7 @@ class MessageSender(object):
 	def send_message(self, to, sender_name, sender_avatar, message, chat_id=None):
 		if not message.validate():
 			self._logger.error(u"failed validating message: {0}".format(message))
-			raise Exception("failed validating message: {0}".format(message))
+			raise ViberValidationException("failed validating message: {0}".format(message))
 
 		payload = self._prepare_payload(
 			message=message,
@@ -29,7 +34,7 @@ class MessageSender(object):
 	def broadcast_message(self, to, sender_name, sender_avatar, message, chat_id=None):
 		if not message.validate():
 			self._logger.error(u"failed validating message: {0}".format(message))
-			raise Exception("failed validating message: {0}".format(message))
+			raise ViberValidationException("failed validating message: {0}".format(message))
 
 		payload = self._prepare_payload(
 			message=message,
@@ -48,10 +53,10 @@ class MessageSender(object):
 	def post_to_public_account(self, sender, sender_name, sender_avatar, message):
 		if not message.validate():
 			self._logger.error(u"failed validating message: {0}".format(message))
-			raise Exception("failed validating message: {0}".format(message))
+			raise ViberValidationException("failed validating message: {0}".format(message))
 
 		if sender is None:
-			raise Exception(u"missing parameter sender")
+			raise ViberException(u"missing parameter sender")
 
 		payload = self._prepare_payload(
 			message=message,
@@ -69,7 +74,11 @@ class MessageSender(object):
 			endpoint, json.dumps(payload))
 
 		if not result['status'] == 0:
-			raise Exception(u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']))
+			raise ViberAPIException(
+				u"failed with status: {0}, message: {1}".format(result['status'], result['status_message']),
+				status=result['status'],
+				status_message=result['status_message'],
+			)
 
 		return result
 
